@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GHR & DR PLUS Customer Portal</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root{
+  --green:#0e5b3a; --green-dark:#0a4229; --gold:#b8923f; --gold-light:#e9d9ae;
+  --bg:#f4f6f5; --surface:#ffffff; --border:#e1e5e3; --text:#1b241f; --text-mute:#5c6b62;
+  --danger:#b3413a; --ok:#1c7a4c; --warn:#a5720f;
+  --radius:12px;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+:root[data-theme="dark"]{
+  --bg:#10201a; --surface:#16281f; --border:#25392f; --text:#eaf2ec; --text-mute:#93a89b;
+  --green:#3fae7c; --green-dark:#2e8a63; --gold:#d8b463; --gold-light:#4a3f22;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+button{font-family:inherit;cursor:pointer}
+input,select{font-family:inherit}
+.hidden{display:none !important}
+.demo-tag{position:fixed;bottom:10px;right:10px;background:var(--gold);color:#2a2000;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;z-index:999;letter-spacing:.3px}
+/* ---------- Auth screens ---------- */
+#authScreen{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 32px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,.06)}
+.logo{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:22px}
+.logo-mark{width:38px;height:38px;border-radius:8px;background:linear-gradient(135deg,var(--green),var(--green-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px}
+.logo-text{font-weight:700;font-size:17px;color:var(--green)}
+.auth-card h1{font-size:21px;margin:0 0 4px}
+.auth-card p.sub{color:var(--text-mute);margin:0 0 22px;font-size:14px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.field input,.field select{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:8px;padding:11px 18px;font-size:14px;font-weight:600;width:100%}
+.btn-primary{background:var(--green);color:#fff}
+.btn-primary:hover{background:var(--green-dark)}
+.btn-ghost{background:transparent;color:var(--green);border:1px solid var(--border)}
+.link-row{text-align:center;margin-top:14px;font-size:13px;color:var(--text-mute)}
+.link-row a{color:var(--green);text-decoration:none;font-weight:600;cursor:pointer}
+.hint-box{background:var(--gold-light);border-radius:8px;padding:10px 12px;font-size:12px;margin-bottom:16px;color:var(--text)}
+.security-note{font-size:11px;color:var(--text-mute);margin-top:18px;text-align:center}
+/* ---------- App shell ---------- */
+#app{display:none;min-height:100%}
+#app.active{display:flex}
+.sidebar{width:236px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;padding:18px 12px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar .logo{justify-content:flex-start;padding:0 6px;margin-bottom:20px}
+.programme-switch{display:flex;background:var(--bg);border-radius:10px;padding:3px;margin-bottom:18px}
+.programme-switch button{flex:1;background:transparent;border:none;padding:8px 4px;border-radius:8px;font-size:12.5px;font-weight:700;color:var(--text-mute)}
+.programme-switch button.active{background:var(--green);color:#fff}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;font-size:14px;font-weight:500;color:var(--text-mute);border:none;background:transparent;width:100%;text-align:left;margin-bottom:2px}
+.nav-item .ic{width:18px;text-align:center}
+.nav-item:hover{background:var(--bg)}
+.nav-item.active{background:var(--gold-light);color:var(--green);font-weight:700}
+.nav-sep{height:1px;background:var(--border);margin:10px 4px}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:10}
+.hamburger{display:none;background:none;border:none;font-size:20px;color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.icon-btn{background:var(--bg);border:1px solid var(--border);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;font-size:15px}
+.dot{position:absolute;top:6px;right:6px;width:7px;height:7px;background:var(--danger);border-radius:50%}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.user-chip{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.content{padding:22px;flex:1;overflow-y:auto}
+.page{display:none}
+.page.active{display:block}
+h2.page-title{margin:0 0 4px;font-size:20px}
+.page-sub{color:var(--text-mute);font-size:13px;margin:0 0 20px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.stat-label{font-size:12px;color:var(--text-mute);margin-bottom:6px;font-weight:600}
+.stat-value{font-size:24px;font-weight:700}
+.stat-sub{font-size:12px;color:var(--ok);margin-top:4px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:18px}
+.panel h3{margin:0 0 14px;font-size:15px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;color:var(--text-mute);font-weight:600;font-size:12px;padding:8px 10px;border-bottom:1px solid var(--border)}
+td{padding:10px;border-bottom:1px solid var(--border)}
+.table-wrap{overflow-x:auto}
+.badge{padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:700}
+.badge-ok{background:#e2f4ea;color:var(--ok)}
+.badge-warn{background:#fbf0dc;color:var(--warn)}
+:root[data-theme="dark"] .badge-ok{background:#12351f}
+:root[data-theme="dark"] .badge-warn{background:#3a2c0f}
+.link-btn{background:none;border:none;color:var(--green);font-weight:700;font-size:13px}
+.small-btn{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--text)}
+.small-btn.primary{background:var(--green);color:#fff;border:none}
+.cert-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.cert-card{border:1px solid var(--border);border-radius:10px;padding:14px;background:var(--bg)}
+.cert-row{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px;color:var(--text-mute)}
+.cert-row b{color:var(--text)}
+.field-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+.field-row:last-child{border-bottom:none}
+.field-row .fl{font-size:12px;color:var(--text-mute);margin-bottom:2px}
+.field-row .fv{font-size:14px;font-weight:600}
+.tag-readonly{font-size:10px;background:var(--bg);border:1px solid var(--border);padding:1px 7px;border-radius:10px;color:var(--text-mute);margin-left:6px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:100;padding:16px}
+.modal-bg.active{display:flex}
+.modal{background:var(--surface);border-radius:14px;max-width:560px;width:100%;max-height:88vh;overflow-y:auto;padding:24px}
+.modal-close{float:right;background:none;border:none;font-size:18px;color:var(--text-mute)}
+.toggle{position:relative;width:42px;height:24px;background:var(--border);border-radius:20px;border:none;flex-shrink:0}
+.toggle.on{background:var(--green)}
+.toggle::after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:3px;left:3px;transition:.15s}
+.toggle.on::after{left:21px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:12px 22px;border-radius:8px;font-size:13.5px;font-weight:600;z-index:200;display:none}
+.notif-panel{position:absolute;top:52px;right:20px;width:320px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:none;z-index:60;padding:10px}
+.notif-panel.active{display:block}
+.notif-item{padding:10px;border-radius:8px;font-size:12.5px}
+.notif-item:hover{background:var(--bg)}
+.notif-item b{display:block;font-size:13px;margin-bottom:2px}
+.news-card{border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;background:var(--surface)}
+.news-date{font-size:11.5px;color:var(--text-mute);margin-bottom:4px}
+.enq-cat{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.enq-cat label{border:1px solid var(--border);border-radius:8px;padding:8px;font-size:12.5px;display:flex;align-items:center;gap:6px}
+select.field-input{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text)}
+textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-family:inherit;min-height:90px}
+@media(max-width:900px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .cert-grid{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:-260px;top:0;height:100vh;z-index:80;transition:.2s;box-shadow:0 0 20px rgba(0,0,0,.2)}
+  .sidebar.open{left:0}
+  .hamburger{display:block}
+  .content{padding:14px}
+  .enq-cat{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== AUTH ===== -->
+<div id="authScreen">
+  <div class="auth-card" id="authCard">
+    <!-- LOGIN -->
+    <div id="view-login">
+      <div class="logo"><div class="logo-mark">NA</div><div class="logo-text">NIRVANA</div></div>
+      <h1>Welcome Back</h1>
+      <p class="sub">Access your GHR & DR PLUS account</p>
+      <div class="hint-box">Demo login — IC: <b>900101-10-1234</b> · Password: <b>Password123</b></div>
+      <div class="field"><label>IC / Passport / Company Reg. No.</label><input id="loginId" value="900101-10-1234"></div>
+      <div class="field"><label>Password</label><input id="loginPw" type="password" value="Password123"></div>
+      <button class="btn btn-primary" onclick="doLogin()">Log In</button>
+      <div class="link-row"><a onclick="show('view-forgot')">Forgot Password?</a></div>
+      <div class="link-row">Don't have an account? <a onclick="show('view-reg1')">Activate Your Account</a></div>
+      <p class="security-note">🔒 Your information is encrypted and protected. This is a demo prototype — no real data is transmitted.</p>
+    </div>
+    <!-- REGISTER STEP 1 -->
+    <div id="view-reg1" class="hidden">
+      <div class="logo"><div class="logo-mark">NA</div><div class="logo-text">NIRVANA</div></div>
+      <h1>Activate Your Account</h1>
+      <p class="sub">Enter your identity to get started</p>
+      <div class="field"><label>IC / Passport / Company Reg. No.</label><input id="regId" placeholder="900101-10-1234"></div>
+      <button class="btn btn-primary" onclick="show('view-otp')">Continue</button>
+      <div class="link-row"><a onclick="show('view-login')">Back to Login</a></div>
+    </div>
+    <!-- OTP -->
+    <div id="view-otp" class="hidden">
+      <div class="logo"><div class="logo-mark">NA</div><div class="logo-text">NIRVANA</div></div>
+      <h1>Verify OTP</h1>
+      <p class="sub">OTP sent to ******1234</p>
+      <div class="field"><label>6-digit OTP</label><input id="otpVal" maxlength="6" placeholder="123456"></div>
+      <button class="btn btn-primary" onclick="show('view-setpw')">Verify OTP</button>
+      <button class="btn btn-ghost" style="margin-top:8px" onclick="toast('OTP resent')">Resend OTP</button>
+      <div class="link-row">Didn't receive it? <a onclick="show('page-contact-pre')">Contact Us</a></div>
+    </div>
+    <!-- SET PASSWORD -->
+    <div id="view-setpw" class="hidden">
+      <div class="logo"><div class="logo-mark">NA</div><div class="logo-text">NIRVANA</div></div>
+      <h1>Create Password</h1>
+      <p class="sub">Min. 8 characters, one uppercase letter, one number</p>
+      <div class="field"><label>New Password</label><input type="password" id="newpw1"></div>
+      <div class="field"><label>Confirm Password</label><input type="password" id="newpw2"></div>
+      <button class="btn btn-primary" onclick="show('view-regdone')">Set Password</button>
+    </div>
+    <!-- REG DONE -->
+    <div id="view-regdone" class="hidden" style="text-align:center">
+      <div style="font-size:40px;margin-bottom:10px">✅</div>
+      <h1>Registration Complete</h1>
+      <p class="sub">Redirecting you to the portal…</p>
+    </div>
+    <!-- FORGOT -->
+    <div id="view-forgot" class="hidden">
+      <div class="logo"><div class="logo-mark">NA</div><div class="logo-text">NIRVANA</div></div>
+      <h1>Forgot Password</h1>
+      <p class="sub">Enter your IC/Passport to reset via OTP</p>
+      <div class="field"><label>IC / Passport / Company Reg. No.</label><input placeholder="900101-10-1234"></div>
+      <button class="btn btn-primary" onclick="show('view-otp')">Send OTP</button>
+      <div class="link-row"><a onclick="show('view-login')">Back to Login</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP SHELL ===== -->
+<div id="app">
+  <div class="sidebar" id="sidebar">
+    <div class="logo"><div class="logo-mark">NA</div><div class="logo-text">NIRVANA</div></div>
+    <div class="programme-switch">
+      <button id="pg-GHR" class="active" onclick="setProgramme('GHR')">GHR</button>
+      <button id="pg-DRP" onclick="setProgramme('DRP')">DR PLUS</button>
+    </div>
+    <button class="nav-item active" data-page="dashboard" onclick="go('dashboard')"><span class="ic">🏠</span>Dashboard</button>
+    <button class="nav-item" data-page="profile" onclick="go('profile')"><span class="ic">👤</span>Customer Profile</button>
+    <button class="nav-item" data-page="entitlement" onclick="go('entitlement')"><span class="ic">📄</span>Holder's Entitlement</button>
+    <button class="nav-item" data-page="payouts" onclick="go('payouts')"><span class="ic">💰</span>Payout History</button>
+    <button class="nav-item" data-page="estatement" onclick="go('estatement')"><span class="ic">🧾</span>E-Statement</button>
+    <button class="nav-item" data-page="contact" onclick="go('contact')"><span class="ic">✉️</span>Contact Us</button>
+    <button class="nav-item" data-page="news" onclick="go('news')"><span class="ic">📰</span>News</button>
+    <button class="nav-item" data-page="settings" onclick="go('settings')"><span class="ic">⚙️</span>Settings</button>
+    <div class="nav-sep"></div>
+    <button class="nav-item" onclick="logout()"><span class="ic">🚪</span>Logout</button>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div style="font-weight:700;font-size:15px" id="topTitle">Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn" onclick="toggleNotif()">🔔<span class="dot" id="notifDot"></span></button>
+        <div class="user-chip"><div class="avatar">TW</div><span id="userNameChip">Tan Wei Ming</span></div>
+      </div>
+      <div class="notif-panel" id="notifPanel">
+        <div style="display:flex;justify-content:space-between;padding:6px 8px"><b style="font-size:13px">Notifications</b><a class="link-btn" style="font-size:11.5px" onclick="markAllRead()">Mark all read</a></div>
+        <div class="notif-item"><b>2028 Payout Processed</b>Your payout of RM 1,704.00 has been processed.</div>
+        <div class="notif-item"><b>New E-Statement Available</b>Your 2028 annual statement is ready.</div>
+        <div class="notif-item"><b>Profile Update</b>Your bank account update is pending verification.</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <h2 class="page-title">Welcome back, Tan</h2>
+        <p class="page-sub">Here's your <span id="progLabel1">GHR</span> account overview</p>
+        <div class="grid">
+          <div class="card"><div class="stat-label">Total Units</div><div class="stat-value" id="stat-units">10 Units</div></div>
+          <div class="card"><div class="stat-label">Files Held</div><div class="stat-value" id="stat-files">5 Files</div></div>
+          <div class="card"><div class="stat-label">Total Payout Received</div><div class="stat-value" id="stat-total">RM 8,520.00</div></div>
+          <div class="card"><div class="stat-label">Latest Payout (2028)</div><div class="stat-value" id="stat-latest">RM 1,704.00</div><div class="stat-sub">Paid on 15 Mar 2028</div></div>
+        </div>
+        <div class="panel">
+          <h3>Payout Overview</h3>
+          <canvas id="payoutChart" height="90"></canvas>
+          <div style="margin-top:12px"><button class="small-btn primary" onclick="go('payouts')">View Payout History</button></div>
+        </div>
+        <div class="panel">
+          <h3>Recent Activity</h3>
+          <div class="field-row"><div class="fv">2028 Payout Processed</div><div class="fl">15 Mar 2028</div></div>
+          <div class="field-row"><div class="fv">E-Statement Available</div><div class="fl">16 Mar 2028</div></div>
+          <div class="field-row"><div class="fv">Bank Account Update Submitted</div><div class="fl">02 Feb 2028</div></div>
+          <div class="field-row"><div class="fv">New Announcement</div><div class="fl">28 Jan 2028</div></div>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="page" id="page-profile">
+        <h2 class="page-title">Customer Profile</h2>
+        <p class="page-sub">View and update your personal information</p>
+        <div class="panel">
+          <h3>Personal Information</h3>
+          <div class="field-row"><div><div class="fl">Full Name <span class="tag-readonly">Read-only</span></div><div class="fv">Tan Wei Ming</div></div></div>
+          <div class="field-row"><div><div class="fl">IC / Passport No. <span class="tag-readonly">Read-only</span></div><div class="fv">900101-10-1234</div></div></div>
+          <div class="field-row"><div><div class="fl">Phone Number</div><div class="fv" id="v-phone">012-345 6789</div></div><button class="small-btn" onclick="editField('v-phone')">Edit</button></div>
+          <div class="field-row"><div><div class="fl">Email Address</div><div class="fv" id="v-email">tan@example.com</div></div><button class="small-btn" onclick="editField('v-email')">Edit</button></div>
+          <div class="field-row"><div><div class="fl">Mailing Address</div><div class="fv" id="v-addr">12, Jalan Bahagia, 50460 Kuala Lumpur</div></div><button class="small-btn" onclick="editField('v-addr')">Edit</button></div>
+        </div>
+        <div class="panel">
+          <h3>Bank Account</h3>
+          <div class="field-row"><div><div class="fl">Bank Name</div><div class="fv">Maybank</div></div></div>
+          <div class="field-row"><div><div class="fl">Account Number</div><div class="fv"><span id="bankNo">•••• •••• 1234</span> <button class="link-btn" onclick="toggleBank()">👁</button></div></div></div>
+          <div class="field-row"><div><div class="fl">Status</div><span class="badge badge-ok">Verified</span></div><button class="small-btn primary" onclick="openBankModal()">Update Bank Account</button></div>
+        </div>
+      </div>
+
+      <!-- ENTITLEMENT -->
+      <div class="page" id="page-entitlement">
+        <h2 class="page-title">Holder's Entitlement</h2>
+        <p class="page-sub"><span id="progLabel2">GHR</span> · <span id="ent-units">10 Units</span> across <span id="ent-files">5 Files</span></p>
+        <div class="panel">
+          <h3>E-Certificates</h3>
+          <div class="cert-grid" id="certGrid"></div>
+        </div>
+        <div class="panel">
+          <h3>File Breakdown</h3>
+          <div class="table-wrap"><table id="fileTable">
+            <thead><tr><th>File No.</th><th>Certificate</th><th>Bank</th><th>Units</th><th>Holder</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- PAYOUT HISTORY -->
+      <div class="page" id="page-payouts">
+        <h2 class="page-title">Payout History</h2>
+        <p class="page-sub">Statement of all payouts received under <span id="progLabel3">GHR</span></p>
+        <div class="panel">
+          <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+            <select class="field-input" style="width:auto" onchange="filterPayouts(this.value)">
+              <option value="all">All Status</option><option value="Paid">Paid</option><option value="Processing">Processing</option><option value="Pending">Pending</option>
+            </select>
+            <select class="field-input" style="width:auto" onchange="sortPayouts(this.value)">
+              <option value="desc">Year: Newest First</option><option value="asc">Year: Oldest First</option>
+            </select>
+          </div>
+          <div class="table-wrap"><table id="payoutTable">
+            <thead><tr><th>Year</th><th>Units</th><th>Total Payout</th><th>Status</th><th>Payment Date</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- E-STATEMENT -->
+      <div class="page" id="page-estatement">
+        <h2 class="page-title">Annual E-Statement</h2>
+        <p class="page-sub">Select a year to view your official statement</p>
+        <div class="panel">
+          <select class="field-input" style="width:200px;margin-bottom:16px" id="stmtYear" onchange="renderStatement()"></select>
+          <div id="stmtBody"></div>
+          <div style="margin-top:14px;display:flex;gap:8px">
+            <button class="small-btn" onclick="toast('Statement opened')">View Statement</button>
+            <button class="small-btn primary" onclick="toast('PDF download simulation')">Download PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTACT -->
+      <div class="page" id="page-contact">
+        <h2 class="page-title">How can we help?</h2>
+        <div class="panel">
+          <div class="field"><label>Name</label><input value="Tan Wei Ming"></div>
+          <div class="field"><label>Email</label><input value="tan@example.com"></div>
+          <div class="field"><label>Phone Number</label><input value="012-345 6789"></div>
+          <div class="field"><label>Preferred Contact Channel</label>
+            <select class="field-input"><option>Email</option><option>Phone</option><option>WhatsApp</option></select>
+          </div>
+          <div class="field"><label>Enquiry Category</label>
+            <select class="field-input"><option>Payout</option><option>Bank Account</option><option>Certificate</option><option>Personal Information</option><option>Programme</option><option>Technical Issue</option><option>Other</option></select>
+          </div>
+          <div class="field"><label>Message</label><textarea placeholder="Tell us how we can help..."></textarea></div>
+          <button class="btn btn-primary" style="width:auto" onclick="submitEnquiry()">Submit Enquiry</button>
+        </div>
+        <div class="panel">
+          <h3>Contact Information</h3>
+          <div class="field-row"><div class="fl">Phone</div><div class="fv">03 - 2779 1836</div></div>
+          <div class="field-row"><div class="fl">Address</div><div class="fv">Nirvana 3, Jalan Dewan Bahasa, Bukit Seputeh, 50460 Kuala Lumpur</div></div>
+          <div class="field-row"><div class="fl">Operating Hours</div><div class="fv">Mon–Fri, 9:30 AM–6:15 PM</div></div>
+          <div style="margin-top:10px;display:flex;gap:8px"><button class="small-btn" onclick="toast('Opens Google Maps')">Google Maps</button><button class="small-btn" onclick="toast('Opens Waze')">Waze</button></div>
+        </div>
+      </div>
+
+      <!-- NEWS -->
+      <div class="page" id="page-news">
+        <h2 class="page-title">News & Announcements</h2>
+        <div class="news-card"><div class="news-date">15 March 2028</div><h3 style="margin:0 0 6px">2028 GHR Payout Announcement</h3><p style="margin:0;color:var(--text-mute);font-size:13.5px">Your annual GHR payout has been processed and credited to your registered bank account.</p><button class="link-btn" onclick="toast('Full article shown')">Read More</button></div>
+        <div class="news-card"><div class="news-date">02 Feb 2028</div><h3 style="margin:0 0 6px">Important Programme Update</h3><p style="margin:0;color:var(--text-mute);font-size:13.5px">Updates to the programme terms take effect from April 2028.</p><button class="link-btn" onclick="toast('Full article shown')">Read More</button></div>
+        <div class="news-card"><div class="news-date">16 Mar 2028</div><h3 style="margin:0 0 6px">E-Statement Available</h3><p style="margin:0;color:var(--text-mute);font-size:13.5px">Your 2028 annual e-statement is now ready to view.</p><button class="link-btn" onclick="toast('Full article shown')">Read More</button></div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="page" id="page-settings">
+        <h2 class="page-title">Settings</h2>
+        <div class="panel">
+          <h3>Notifications</h3>
+          <div class="field-row"><div><div class="fv">Payout Notification</div><div class="fl">Notify me when payout is processed</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          <div class="field-row"><div><div class="fv">News Notification</div><div class="fl">Notify me when there is a new announcement</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+        </div>
+        <div class="panel">
+          <h3>Privacy</h3>
+          <div class="field-row"><div class="fv">Terms & Conditions</div><button class="link-btn" onclick="toast('T&Cs shown')">View</button></div>
+          <div class="field-row"><div class="fv">Privacy Policy</div><button class="link-btn" onclick="toast('Policy shown')">View</button></div>
+        </div>
+        <div class="panel">
+          <h3>Change Password</h3>
+          <div class="field"><label>Current Password</label><input type="password"></div>
+          <div class="field"><label>New Password</label><input type="password"></div>
+          <div class="field"><label>Confirm Password</label><input type="password"></div>
+          <button class="small-btn primary" onclick="toast('Password updated')">Save Password</button>
+        </div>
+        <div class="panel">
+          <h3>Theme</h3>
+          <select class="field-input" style="width:200px" onchange="setTheme(this.value)">
+            <option value="light">Default</option><option value="dark">Dark Theme</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BANK MODAL -->
+<div class="modal-bg" id="bankModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('bankModal')">✕</button>
+    <h3>Update Bank Account</h3>
+    <p style="font-size:12.5px;color:var(--warn);background:var(--gold-light);padding:8px 10px;border-radius:8px">⚠ Bank account changes require OTP verification.</p>
+    <div class="field"><label>Bank Name</label><select class="field-input"><option>Maybank</option><option>CIMB Bank</option><option>Public Bank</option></select></div>
+    <div class="field"><label>New Bank Account Number</label><input placeholder="e.g. 1234567890"></div>
+    <div class="field"><label>Supporting Document</label><input type="file"></div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="small-btn" onclick="closeModal('bankModal')">Cancel</button>
+      <button class="small-btn primary" onclick="submitBank()">Submit for Verification</button>
+    </div>
+    <div id="bankStatus"></div>
+  </div>
+</div>
+
+<!-- PAYOUT DETAIL MODAL -->
+<div class="modal-bg" id="payoutModal">
+  <div class="modal" id="payoutModalBody"></div>
+</div>
+
+<!-- CERT MODAL -->
+<div class="modal-bg" id="certModal">
+  <div class="modal" id="certModalBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="demo-tag">DEMO / PROTOTYPE MODE</div>
+
+<script>
+/* ---------- DATA ---------- */
+const DATA = {
+  GHR:{units:10,files:5,total:8520,latest:1704,perUnitBase:170.4,certPrefix:1,filePrefix:9000000001},
+  DRP:{units:6,files:3,total:5220,latest:1044,perUnitBase:174.0,certPrefix:1001,filePrefix:9200000001}
+};
+let programme='GHR';
+function years(){return Array.from({length:30},(_,i)=>2026+i)}
+function payoutSeries(p){const d=DATA[p];return years().map((y,i)=>({year:y,units:d.units,perUnit:+(d.perUnitBase+i*3.1).toFixed(2),total:+((d.perUnitBase+i*3.1)*d.units).toFixed(2),status:i<3?'Paid':(i===3?'Processing':'Pending'),date:`15 Mar ${y}`}))}
+let chart;
+function renderChart(){
+  const s=payoutSeries(programme);
+  const ctx=document.getElementById('payoutChart');
+  if(chart)chart.destroy();
+  chart=new Chart(ctx,{type:'line',data:{labels:s.map(x=>x.year),datasets:[{label:'Total Payout (RM)',data:s.map(x=>x.total),borderColor:'#0e5b3a',backgroundColor:'rgba(14,91,58,.08)',tension:.25,fill:true,pointRadius:2}]},
+  options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:(c)=>{const d=s[c.dataIndex];return [`Year: ${d.year}`,`Units: ${d.units}`,`Payout/Unit: RM ${d.perUnit}`,`Total: RM ${d.total.toLocaleString(undefined,{minimumFractionDigits:2})}`]}}}},scales:{y:{ticks:{callback:v=>'RM '+v}}}}});
+}
+function renderDashboard(){
+  const d=DATA[programme];
+  document.getElementById('progLabel1').textContent=programme==='GHR'?'GHR':'DR PLUS';
+  document.getElementById('stat-units').textContent=d.units+' Units';
+  document.getElementById('stat-files').textContent=d.files+' Files';
+  document.getElementById('stat-total').textContent='RM '+d.total.toLocaleString(undefined,{minimumFractionDigits:2});
+  document.getElementById('stat-latest').textContent='RM '+d.latest.toLocaleString(undefined,{minimumFractionDigits:2});
+  renderChart();
+}
+function renderEntitlement(){
+  const d=DATA[programme];
+  document.getElementById('progLabel2').textContent=programme==='GHR'?'GHR':'DR PLUS';
+  document.getElementById('ent-units').textContent=d.units+' Units';
+  document.getElementById('ent-files').textContent=d.files+' Files';
+  let certHtml='',rows='';
+  for(let i=0;i<d.files;i++){
+    const cert=String(d.certPrefix*100+i+1).padStart(10,'0');
+    const file=String(d.filePrefix+i);
+    const units=Math.round(d.units/d.files) || 1;
+    certHtml+=`<div class="cert-card"><div class="cert-row"><span>Certificate No.</span><b>${cert}</b></div><div class="cert-row"><span>Programme</span><b>${programme==='GHR'?'GHR':'DR PLUS'}</b></div><div class="cert-row"><span>Units</span><b>${units} Units</b></div><div class="cert-row"><span>File</span><b>${file}</b></div><div style="display:flex;gap:8px;margin-top:8px"><button class="small-btn" onclick="viewCert('${cert}','${file}',${units})">View Certificate</button><button class="small-btn primary" onclick="toast('Certificate download simulated')">Download</button></div></div>`;
+    rows+=`<tr><td>${file}</td><td>${cert}</td><td>Maybank</td><td>${units}</td><td>Tan Wei Ming</td><td><button class="link-btn" onclick="toast('File details shown')">View</button></td></tr>`;
+  }
+  document.getElementById('certGrid').innerHTML=certHtml;
+  document.getElementById('fileTable').querySelector('tbody').innerHTML=rows;
+}
+function viewCert(cert,file,units){
+  document.getElementById('certModalBody').innerHTML=`<button class="modal-close" onclick="closeModal('certModal')">✕</button><h3>E-Certificate</h3><div class="field-row"><div class="fl">Certificate No.</div><div class="fv">${cert}</div></div><div class="field-row"><div class="fl">File No.</div><div class="fv">${file}</div></div><div class="field-row"><div class="fl">Units</div><div class="fv">${units} Units</div></div><div class="field-row"><div class="fl">Holder</div><div class="fv">Tan Wei Ming</div></div><button class="small-btn primary" style="margin-top:10px" onclick="toast('Certificate download simulated')">Download</button>`;
+  document.getElementById('certModal').classList.add('active');
+}
+let payoutFilter='all', payoutSort='desc';
+function renderPayouts(){
+  document.getElementById('progLabel3').textContent=programme==='GHR'?'GHR':'DR PLUS';
+  let s=payoutSeries(programme).filter(x=>x.status!=='Pending'||true);
+  if(payoutFilter!=='all')s=s.filter(x=>x.status===payoutFilter);
+  s.sort((a,b)=>payoutSort==='desc'?b.year-a.year:a.year-b.year);
+  document.getElementById('payoutTable').querySelector('tbody').innerHTML=s.map(x=>`<tr><td>${x.year}</td><td>${x.units} Units</td><td>RM ${x.total.toLocaleString(undefined,{minimumFractionDigits:2})}</td><td><span class="badge ${x.status==='Paid'?'badge-ok':'badge-warn'}">${x.status}</span></td><td>${x.status==='Paid'?x.date:'—'}</td><td><button class="link-btn" onclick="viewPayoutDetail(${x.year})">View Details</button></td></tr>`).join('');
+}
+function filterPayouts(v){payoutFilter=v;renderPayouts();}
+function sortPayouts(v){payoutSort=v;renderPayouts();}
+function viewPayoutDetail(year){
+  const d=DATA[programme];const s=payoutSeries(programme).find(x=>x.year===year);
+  let rows='';const perFile=+(s.total/d.files).toFixed(2);const unitsPerFile=Math.round(d.units/d.files)||1;
+  for(let i=1;i<=d.files;i++)rows+=`<tr><td>File 00${i}</td><td>${unitsPerFile}</td><td>RM ${s.perUnit}</td><td>RM ${perFile.toLocaleString(undefined,{minimumFractionDigits:2})}</td></tr>`;
+  document.getElementById('payoutModalBody').innerHTML=`<button class="modal-close" onclick="closeModal('payoutModal')">✕</button><h3>${year} Payout</h3>
+  <div class="grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
+    <div class="card"><div class="stat-label">Total Files</div><div class="stat-value" style="font-size:18px">${d.files}</div></div>
+    <div class="card"><div class="stat-label">Total Units</div><div class="stat-value" style="font-size:18px">${d.units}</div></div>
+    <div class="card"><div class="stat-label">Total Payout</div><div class="stat-value" style="font-size:18px">RM ${s.total.toLocaleString(undefined,{minimumFractionDigits:2})}</div></div>
+  </div>
+  <div class="table-wrap"><table><thead><tr><th>File</th><th>Units</th><th>Payout/Unit</th><th>Total</th></tr></thead><tbody>${rows}<tr style="font-weight:700"><td>TOTAL</td><td>${d.units}</td><td>—</td><td>RM ${s.total.toLocaleString(undefined,{minimumFractionDigits:2})}</td></tr></tbody></table></div>
+  <button class="small-btn primary" style="margin-top:12px" onclick="toast('Statement download simulated')">Download Payout Statement</button>
+  <p style="font-size:11.5px;color:var(--text-mute);margin-top:12px">Payouts are subject to the applicable programme terms, eligibility requirements and other conditions. The programme may provide payouts for up to 30 years; the 30-year duration is not guaranteed.</p>`;
+  document.getElementById('payoutModal').classList.add('active');
+}
+function renderStatement(){
+  const sel=document.getElementById('stmtYear');
+  if(!sel.options.length){years().slice(0,4).forEach(y=>sel.appendChild(new Option(y,y)));}
+  const y=sel.value||years()[0];
+  const s=payoutSeries(programme).find(x=>x.year==y);
+  const d=DATA[programme];
+  document.getElementById('stmtBody').innerHTML=`<div class="field-row"><div class="fl">Holder</div><div class="fv">Tan Wei Ming</div></div>
+  <div class="field-row"><div class="fl">Programme</div><div class="fv">${programme==='GHR'?'GHR':'DR PLUS'}</div></div>
+  <div class="field-row"><div class="fl">Units</div><div class="fv">${d.units} Units</div></div>
+  <div class="field-row"><div class="fl">Payout per Unit</div><div class="fv">RM ${s.perUnit}</div></div>
+  <div class="field-row"><div class="fl">Total Payout</div><div class="fv">RM ${s.total.toLocaleString(undefined,{minimumFractionDigits:2})}</div></div>
+  <div class="field-row"><div class="fl">Payment Status</div><span class="badge ${s.status==='Paid'?'badge-ok':'badge-warn'}">${s.status}</span></div>
+  <div class="field-row"><div class="fl">Reference No.</div><div class="fv">STMT-${programme}-${y}-0${DATA[programme].files}</div></div>`;
+}
+/* ---------- NAV ---------- */
+function go(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-item[data-page]').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
+  document.getElementById('topTitle').textContent=document.querySelector('.nav-item.active').textContent.trim();
+  document.getElementById('sidebar').classList.remove('open');
+  if(page==='estatement')renderStatement();
+}
+function setProgramme(p){
+  programme=p;
+  document.getElementById('pg-GHR').classList.toggle('active',p==='GHR');
+  document.getElementById('pg-DRP').classList.toggle('active',p==='DRP');
+  renderDashboard();renderEntitlement();renderPayouts();renderStatement();
+  toast((p==='GHR'?'GHR':'DR PLUS')+' programme selected');
+}
+function editField(id){
+  const el=document.getElementById(id);
+  const val=prompt('Update value:',el.textContent);
+  if(val){el.textContent=val;toast('Profile updated');}
+}
+let bankRevealed=false;
+function toggleBank(){bankRevealed=!bankRevealed;document.getElementById('bankNo').textContent=bankRevealed?'5123 4567 1234':'•••• •••• 1234';}
+function openBankModal(){document.getElementById('bankStatus').innerHTML='';document.getElementById('bankModal').classList.add('active');}
+function submitBank(){document.getElementById('bankStatus').innerHTML='<div class="badge badge-warn" style="margin-top:10px">Pending Verification</div><p style="font-size:12px;color:var(--text-mute);margin-top:8px">Submitted → Under Review → Approved</p>';toast('Submitted for verification');}
+function closeModal(id){document.getElementById(id).classList.remove('active');}
+function toggleNotif(){document.getElementById('notifPanel').classList.toggle('active');}
+function markAllRead(){document.getElementById('notifDot').style.display='none';document.getElementById('notifPanel').classList.remove('active');}
+function submitEnquiry(){toast('Enquiry submitted — Ref: ENQ-'+Math.floor(100000+Math.random()*900000));}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(window._tt);window._tt=setTimeout(()=>t.style.display='none',2600);}
+function setTheme(v){document.documentElement.setAttribute('data-theme',v);}
+function show(id){document.querySelectorAll('#authCard > div').forEach(d=>d.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');
+  if(id==='view-regdone')setTimeout(doLogin,1400);}
+function doLogin(){
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('app').classList.add('active');
+  renderDashboard();renderEntitlement();renderPayouts();
+}
+function logout(){document.getElementById('app').classList.remove('active');document.getElementById('authScreen').style.display='flex';show('view-login');}
+document.addEventListener('click',(e)=>{if(!e.target.closest('.notif-panel')&&!e.target.closest('.icon-btn'))document.getElementById('notifPanel').classList.remove('active');});
+</script>
+</body>
+</html>

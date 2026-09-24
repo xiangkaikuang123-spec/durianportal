@@ -213,12 +213,14 @@ textarea.inp{min-height:120px;resize:vertical}
 .news-i{padding:24px;display:flex;flex-direction:column;gap:10px}
 .news-i time{font-size:13px;color:var(--ink-3)}
 .news-i h3{font-size:18px;line-height:1.3}.news-i p{color:var(--ink-2)}
-.gal{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
-.gal button{padding:0;border:0;border-radius:16px;overflow:hidden;position:relative;aspect-ratio:4/3;background:var(--line);grid-column:span 2}
-.gal button:nth-child(1),.gal button:nth-child(4){grid-column:span 3}
-.gal svg{width:100%;height:100%;display:block;transition:transform .35s}
-.gal button:hover svg{transform:scale(1.04)}
-.gal span{position:absolute;left:0;right:0;bottom:0;padding:26px 14px 12px;text-align:left;color:#fff;font-weight:600;font-size:14px;background:linear-gradient(transparent,rgba(0,0,0,.55))}
+.gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.gal-card{padding:0;border:1px solid var(--line);border-radius:18px;overflow:hidden;position:relative;aspect-ratio:16/10;background:var(--surface);box-shadow:var(--shadow);cursor:pointer;text-align:left}
+.gal-card img{width:100%;height:100%;display:block;object-fit:cover;transition:transform .45s ease,filter .45s ease}
+.gal-card:hover img{transform:scale(1.045);filter:saturate(1.06)}
+.gal-card:focus-visible{outline:3px solid color-mix(in srgb,var(--acc) 55%,transparent);outline-offset:3px}
+.gal-card span{position:absolute;left:0;right:0;bottom:0;padding:42px 16px 14px;text-align:left;color:#fff;font-weight:650;font-size:14px;background:linear-gradient(transparent,rgba(0,0,0,.72))}
+.lb-photo{border-radius:16px;overflow:hidden;background:var(--surface-2);max-height:70vh}
+.lb-photo img{display:block;width:100%;height:auto;max-height:70vh;object-fit:contain}
 .faq{max-width:820px}
 .faq details{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden}
 .faq summary{list-style:none;cursor:pointer;padding:20px 22px;font-weight:650;font-size:17px;display:flex;justify-content:space-between;gap:16px;align-items:center}
@@ -233,12 +235,22 @@ textarea.inp{min-height:120px;resize:vertical}
 .contact-list .ci{flex:none;width:40px;height:40px;border-radius:12px;background:var(--acc-soft);color:var(--acc);display:grid;place-items:center}
 .contact-list b{display:block;font-size:13px;color:var(--ink-3);font-weight:600}
 .contact-list a{font-weight:600}
-.foot{background:var(--acc-strong);color:rgba(255,255,255,.85);padding:48px 0 32px;margin-top:0}
+.foot{background:var(--acc-strong);color:rgba(255,255,255,.86);padding:56px 0 24px;margin-top:0}
 [data-theme=dark] .foot{background:var(--surface);border-top:1px solid var(--line)}
-.foot .wrap{display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap}
+.foot-grid{display:grid!important;grid-template-columns:minmax(240px,1.5fr) repeat(3,minmax(150px,1fr));gap:36px 42px}
 .foot a{color:#fff}.foot .logo{color:#fff}.foot .logo-t small{color:rgba(255,255,255,.7)}
-.foot small{display:block;margin-top:24px;width:100%;color:rgba(255,255,255,.65)}
-.foot-links{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.foot-brand p{margin-top:16px;font-weight:650;color:#fff}
+.foot-brand>span,.social-note{display:block;margin-top:7px;max-width:34ch;font-size:13px;line-height:1.55;color:rgba(255,255,255,.65)}
+.foot-col h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#fff;margin:4px 0 14px}
+.foot-links{display:grid;gap:9px;align-items:start}
+.foot-links a{font-size:14px;text-decoration:none;color:rgba(255,255,255,.78)}
+.foot-links a:hover{color:#fff;text-decoration:underline;text-underline-offset:3px}
+.socials{display:flex;gap:9px;flex-wrap:wrap}
+.social{width:42px;height:42px;border:1px solid rgba(255,255,255,.24);border-radius:12px;display:grid;place-items:center;text-decoration:none;color:#fff!important;background:rgba(255,255,255,.08);transition:background .15s,border-color .15s,transform .15s}
+.social:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4);transform:translateY(-1px)}
+.social svg{width:20px;height:20px}
+.foot-bottom{grid-column:1/-1;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;padding-top:22px;border-top:1px solid rgba(255,255,255,.16)}
+.foot-bottom small{display:block;margin:0;color:rgba(255,255,255,.58);font-size:12.5px}
 
 /* ============ AUTH ============ */
 .auth{min-height:100vh;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
@@ -436,6 +448,8 @@ textarea.inp{min-height:120px;resize:vertical}
 @media (max-width:860px){
   .steps,.news{grid-template-columns:1fr}
   .help-grid{grid-template-columns:1fr}
+  .gal{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .foot-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px}
   .auth{grid-template-columns:1fr}.auth-side{display:none}
   .auth-top{display:block;position:absolute;top:18px;left:20px}
   .auth-main{align-content:start;padding-top:84px}
@@ -444,7 +458,7 @@ textarea.inp{min-height:120px;resize:vertical}
   .pub-menu{display:inline-grid}
   .pub-act{margin-left:auto}
   .sec{padding:60px 0}
-  .gal{grid-template-columns:repeat(2,1fr)}.gal button,.gal button:nth-child(1),.gal button:nth-child(4){grid-column:span 1}
+  .gal{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:720px){
   body{font-size:15px}
@@ -485,8 +499,8 @@ textarea.inp{min-height:120px;resize:vertical}
   .proto-panel{left:12px;bottom:calc(126px + env(safe-area-inset-bottom,0px))}
   .hero-in{padding:40px 0 48px}.hero .lead{font-size:16.5px}
   .hero-cta .btn{flex:1}
-  .pv-big{font-size:28px}
-  .foot .wrap{flex-direction:column}
+  .foot-grid{grid-template-columns:1fr}
+  .foot-bottom{grid-column:1}
   .cert dl{grid-template-columns:1fr}
 }
 @media (max-width:420px){.wrap{width:calc(100% - 32px)}.pub-act .btn-ghost{display:none}}
@@ -552,7 +566,11 @@ const ICONS={
  pin:'<path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
  logout:'<path d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M16 8l4 4-4 4M20 12H9"/>',
- menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
+   facebook:'<path d="M14 8h3V4h-3c-3.3 0-5 1.9-5 5v3H6v4h3v4h4v-4h3l1-4h-4V9c0-.7.3-1 1-1z"/>',
+  instagram:'<rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.5"/><circle cx="17.3" cy="6.8" r="1"/>',
+  youtube:'<rect x="3" y="6" width="18" height="12" rx="3"/><path d="M10 9l5 3-5 3z"/>',
+  linkedin:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10v6M8 7.5v0M12 16v-6M12 13.5c0-2 1.1-3.5 3-3.5s3 1.3 3 3.5V16"/>',
+menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
  bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/>',
  shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2.5 2.5L15.5 10"/>',
  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
@@ -589,8 +607,12 @@ const NOTIFICATIONS=[
   {id:'n5',type:'news',prog:null,title:'Registration invitations stay valid for 30 days',body:'Use the link we send you on WhatsApp within 30 days. If it has expired, contact our team for a new one.',date:'2025-12-10',read:true}
 ];
 const GALLERY=[
-  {t:'First light on the rows',p:0},{t:'Care in every tree',p:1},{t:'Harvest season',p:2},
-  {t:'Smart irrigation',p:3},{t:'The field team',p:4},{t:'After the rain',p:5}
+  {t:'Fresh durians at a Kuala Lumpur market',p:0,img:'https://images.unsplash.com/photo-1774068071701-418509e2b980?auto=format&fit=crop&fm=jpg&q=82&w=1600',credit:'Photo by Josh Lee on Unsplash'},
+  {t:'Durian texture and fresh fruit',p:1,img:'https://images.unsplash.com/photo-1780887333912-72313aa0b6c3?auto=format&fit=crop&fm=jpg&q=82&w=1600',credit:'Photo by Jonny Clow on Unsplash'},
+  {t:'Durian preparation',p:2,img:'https://images.unsplash.com/photo-1652962341879-549ed4d6ae43?auto=format&fit=crop&fm=jpg&q=82&w=1600',credit:'Photo by Alexey Demidov on Unsplash'},
+  {t:'Durian harvest display',p:3,img:'https://images.unsplash.com/photo-1762049213138-e2e8211ecd8c?auto=format&fit=crop&fm=jpg&q=82&w=1600',credit:'Photo by - Kenny on Unsplash'},
+  {t:'Malaysian durian market',p:4,img:'https://images.unsplash.com/photo-1774068071701-418509e2b980?auto=format&fit=crop&fm=jpg&q=82&w=1600',credit:'Photo by Josh Lee on Unsplash'},
+  {t:'King of fruits',p:5,img:'https://images.unsplash.com/photo-1652962341879-549ed4d6ae43?auto=format&fit=crop&fm=jpg&q=82&w=1600',credit:'Photo by Alexey Demidov on Unsplash'}
 ];
 const BANKS=['Maybank','CIMB Bank','Public Bank','RHB Bank','Hong Leong Bank','AmBank','Bank Islam','Bank Rakyat','BSN','OCBC Bank','UOB'];
 const CATS=['Payout','Bank Account','Personal Info','Technical Issue','Others'];
@@ -807,8 +829,6 @@ function publicPage(path){
   return landing();
 }
 function landing(){
-  const st=statsFor(S.prog),po=payoutsFor(S.prog),mx=Math.max(...po.map(x=>x.total),1);
-  const d=dprog();
   return `<a class="skip" href="#/" data-act="jump" data-t="main">Skip to content</a>
   <header class="pub-h"><div class="wrap pub-h-in">${logo()}
     <nav class="pub-nav ${S.pubNav?'open':''}" aria-label="Site sections">
@@ -822,10 +842,7 @@ function landing(){
       <p class="lead">GHR and DR PLUS are complimentary gifts created by Nirvana Asia Group in appreciation of our customers. Log in to see your entitlement, payout history and annual statements, and to keep your details up to date.</p>
       <div class="hero-cta">${S.auth?`<a class="btn btn-primary btn-lg" href="#/dashboard">Go to your dashboard</a>`:`<a class="btn btn-primary btn-lg" href="#/login">Log in</a><a class="btn btn-ghost btn-lg" href="#/register">Register with your invitation</a>`}</div>
       <div class="hero-switch"><span>Preview the portal for</span>${progSwitch()}</div></div>
-      <div class="pv" aria-label="Portal preview with sample data"><div class="pv-top"><div><div class="pv-name">${d.full}</div><div class="small muted">${d.name} · ${st.files} files · ${NUM(st.units)} units</div></div>${badge('Paid history','ok')}</div>
-        <div class="pv-big">${RM(st.total)}</div><div class="small muted">Total payout received</div>
-        <div class="pv-bars">${po.map(x=>`<div><i style="height:${Math.max(8,x.total/mx*78)}px"></i>${x.year}</div>`).join('')}</div>
-        <p class="pv-foot">Preview with sample data.</p></div></div></section>
+      </div></section>
 
   <section class="sec"><div class="wrap"><div class="sec-h"><h2>Getting started takes a few minutes</h2><p>Your invitation is sent to you on WhatsApp, with email as a backup.</p></div>
     <div class="steps"><div class="step"><h3>Open your invitation</h3><p>The link is valid for 30 days. Use it to start registering.</p></div>
@@ -835,8 +852,8 @@ function landing(){
   <section class="sec alt" id="news"><div class="wrap"><div class="sec-h"><h2>Info &amp; News</h2><p>Announcements about the programmes and this portal.</p></div>
     <div class="news">${NEWS.map(n=>`<article class="card news-i">${badge(n.tag,'info')}<time datetime="${n.date}">${fmtDate(n.date)}</time><h3>${n.title}</h3><p>${n.body}</p></article>`).join('')}</div></div></section>
 
-  <section class="sec" id="gallery"><div class="wrap"><div class="sec-h"><h2>Gallery</h2><p class="small muted" style="margin-top:8px">Placeholder artwork. Replace with approved photography.</p></div>
-    <div class="gal">${GALLERY.map(g=>`<button type="button" data-act="lightbox" data-i="${g.p}" aria-label="Enlarge: ${g.t}">${scene(g.p,g.t)}<span>${g.t}</span></button>`).join('')}</div></div></section>
+  <section class="sec" id="gallery"><div class="wrap"><div class="sec-h"><h2>Gallery</h2><p class="small muted" style="margin-top:8px">Explore the world behind the programmes — durian orchards, harvests and Malaysian fruit culture.</p></div>
+    <div class="gal">${GALLERY.map(g=>`<button type="button" class="gal-card" data-act="lightbox" data-i="${g.p}" aria-label="Enlarge: ${g.t}"><img src="${g.img}" alt="${esc(g.t)}" loading="lazy" decoding="async"><span>${g.t}</span></button>`).join('')}</div></div></section>
 
   <section class="sec alt" id="faq"><div class="wrap"><div class="sec-h"><h2>Frequently asked questions</h2></div>
     <div class="faq">
@@ -847,8 +864,48 @@ function landing(){
   <section class="sec" id="help"><div class="wrap"><div class="sec-h"><h2>How can we help?</h2><p>Send us an enquiry and we'll reply within 3–5 working days.</p></div>
     <div class="help-grid"><div class="card card-p form-host">${contactForm({})}</div><div class="card card-p">${contactDetails()}</div></div></div></section>
   </main>
-  <footer class="foot"><div class="wrap">${logo()}<div class="foot-links"><a href="#/" data-act="legal" data-t="privacy">Privacy Policy</a><a href="#/" data-act="legal" data-t="terms">Terms &amp; Conditions</a><a href="#/login">Log in</a></div>
-    <small>© ${new Date().getFullYear()} Nirvana Asia Group, Malaysia. ${esc(CONTACT.addr)}</small></div></footer>`;
+  <footer class="foot">
+    <div class="wrap foot-grid">
+      <div class="foot-brand">
+        ${logo()}
+        <p>GHR &amp; DR PLUS Customer Portal</p>
+        <span>Secure access to your rewards, certificates, entitlement and statements.</span>
+      </div>
+      <div class="foot-col">
+        <h3>Quick links</h3>
+        <div class="foot-links">
+          <a href="#/" data-act="jump" data-t="welcome">Welcome</a>
+          <a href="#/" data-act="jump" data-t="news">Info &amp; News</a>
+          <a href="#/" data-act="jump" data-t="gallery">Gallery</a>
+          <a href="#/" data-act="jump" data-t="faq">FAQ</a>
+          <a href="#/" data-act="jump" data-t="help">Contact Us</a>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h3>Account</h3>
+        <div class="foot-links">
+          <a href="#/login">Log in</a>
+          <a href="#/register">Register</a>
+          <a href="#/" data-act="legal" data-t="privacy">Privacy Policy</a>
+          <a href="#/" data-act="legal" data-t="terms">Terms &amp; Conditions</a>
+        </div>
+      </div>
+      <div class="foot-col foot-social">
+        <h3>Follow us</h3>
+        <div class="socials" aria-label="Social media">
+          <a class="social" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook — placeholder">${ic('facebook',20)}</a>
+          <a class="social" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram — placeholder">${ic('instagram',20)}</a>
+          <a class="social" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" aria-label="YouTube" title="YouTube — placeholder">${ic('youtube',20)}</a>
+          <a class="social" href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn — placeholder">${ic('linkedin',20)}</a>
+        </div>
+        <span class="social-note">Social links are placeholders and can be replaced with the official Nirvana Asia Group profiles.</span>
+      </div>
+      <div class="foot-bottom">
+        <small>© ${new Date().getFullYear()} Nirvana Asia Group, Malaysia.</small>
+        <small>${esc(CONTACT.addr)}</small>
+      </div>
+    </div>
+  </footer>`;
 }
 function contactDetails(){
   return `<h3 style="margin-bottom:18px;font-size:18px">Contact details</h3><ul class="contact-list">
@@ -1300,7 +1357,7 @@ const ACT={
   pubnav(){S.pubNav=!S.pubNav;render();},
   jump(a,e){e.preventDefault();S.pubNav=false;const t=document.getElementById(a.dataset.t);if(location.hash!=='#/'&&location.hash!==''){location.hash='#/';setTimeout(()=>document.getElementById(a.dataset.t)?.scrollIntoView(),50);return;}
     if($('.pub-nav.open'))render();(document.getElementById(a.dataset.t)||t)?.scrollIntoView({behavior:'smooth',block:'start'});},
-  lightbox(a){const g=GALLERY.find(x=>x.p===+a.dataset.i);openModal(g.t,`<div style="border-radius:14px;overflow:hidden;aspect-ratio:4/3">${scene(g.p,g.t)}</div><p class="small muted" style="margin-top:10px">Placeholder artwork.</p>`,{wide:true});},
+  lightbox(a){const g=GALLERY.find(x=>x.p===+a.dataset.i);if(!g)return;openModal(g.t,`<div class="lb-photo"><img src="${g.img}" alt="${esc(g.t)}"></div><p class="small muted" style="margin-top:10px">${esc(g.credit)}</p>`,{wide:true});},
   legal(a,e){e.preventDefault();legalModal(a.dataset.t);},
   'close-modal'(){closeModal();},
   pw(a){const i=document.getElementById(a.dataset.t);const show=i.type==='password';i.type=show?'text':'password';a.innerHTML=ic(show?'eyeoff':'eye',20);a.setAttribute('aria-label',show?'Hide password':'Show password');},
